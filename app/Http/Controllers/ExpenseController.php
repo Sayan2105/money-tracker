@@ -72,4 +72,20 @@ class ExpenseController extends Controller
             'message' => 'Expense Deleted Successfully'
         ]);
     }
+
+    public function adminIndex(Request $req){
+        $expenses = Expense::with('user')
+            ->when($req->category, function ($query) use ($req){
+                $query->where('category', $req->category);
+            })
+            ->when($req->date, function ($query) use ($req){
+                $query->where('date', $req->date);
+            })
+            ->when($req->query('user_id'), function ($query) use ($req){
+                $query->where('user_id', $req->query('user_id'));
+            })
+            ->paginate(10);
+
+        return response()->json($expenses);
+    }
 }

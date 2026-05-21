@@ -20,4 +20,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/expenses/{id}', [ExpenseController::class, 'show']);
     Route::put('/expenses/{id}', [ExpenseController::class, 'update']);
     Route::delete('/expenses/{id}', [ExpenseController::class, 'destroy']);
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/expenses', [ExpenseController::class, 'adminIndex']);
+    });
 });

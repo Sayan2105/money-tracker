@@ -15,12 +15,14 @@ class AuthController extends Controller
         $req->validate([
             'name' => 'string|required',
             'password' => 'required|min:6',
-            'email' => 'required|email|unique:users'
+            'email' => 'required|email|unique:users',
+            'role' => 'required'
         ]);
 
         $user = User::create([
             'name' => $req->name,
             'email' => $req->email,
+            'role' => $req->role,
             'password' => bcrypt($req->password)
         ]);
 
@@ -30,17 +32,14 @@ class AuthController extends Controller
 
     }
 
-
-    public function login(Request $req){
-
+    public function login(Request $req)
+    {
         $req->validate([
             'email' => 'required|email',
             'password' => 'required|min:6'
         ]);
 
-        $login_fields = filter_var($req->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'name' ;
-
-        if(!Auth::attempt([$login_fields => $req->login, 'password' => $req->password])){
+        if (!Auth::attempt(['email' => $req->email, 'password' => $req->password])) {
             return response()->json([
                 'message' => 'Invalid Credentials, try again'
             ], 401);
